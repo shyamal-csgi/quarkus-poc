@@ -3,6 +3,7 @@ package component.com.quarkus.poc.product.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.quarkus.poc.product.domain.products.Product;
+import com.quarkus.poc.product.domain.products.StockMovement;
 import com.quarkus.poc.product.persistence.ProductRepository;
 import component.com.quarkus.poc.product.db.PostgresTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -36,5 +37,31 @@ class ProductRepositoryComponentTest {
                 .get()
                 .extracting(Product::getName, Product::getSku)
                 .containsExactly("Component Widget", "SKU-COMP-01");
+    }
+
+    @Test
+    void persistStockMovement_andFindById_shouldRoundTrip() {
+        productRepository.persist(new Product(
+                "PRD-COMP-2",
+                "Stock Widget",
+                "SKU-COMP-02",
+                "SUP-001",
+                1,
+                OffsetDateTime.now(ZoneOffset.UTC)));
+
+        StockMovement movement = new StockMovement(
+                "SMV-COMP-1",
+                "PRD-COMP-2",
+                "WH-101",
+                1,
+                OffsetDateTime.now(ZoneOffset.UTC));
+
+        productRepository.persistStockMovement(movement);
+
+        assertThat(productRepository.findStockMovementById("SMV-COMP-1"))
+                .isPresent()
+                .get()
+                .extracting(StockMovement::getProductId, StockMovement::getWarehouseId)
+                .containsExactly("PRD-COMP-2", "WH-101");
     }
 }

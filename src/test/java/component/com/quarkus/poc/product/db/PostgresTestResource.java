@@ -1,6 +1,7 @@
 package component.com.quarkus.poc.product.db;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import io.smallrye.reactive.messaging.memory.InMemoryConnector;
 import java.util.HashMap;
 import java.util.Map;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -40,13 +41,14 @@ public class PostgresTestResource implements QuarkusTestResourceLifecycleManager
         props.put("quarkus.flyway.suppliers.migrate-at-start", "true");
         props.put("quarkus.kafka.devservices.enabled", "false");
         props.put("quarkus.datasource.devservices.enabled", "false");
-        props.put("mp.messaging.outgoing.product-events.connector", "smallrye-in-memory");
-        props.put("mp.messaging.incoming.stock-events.connector", "smallrye-in-memory");
+        props.putAll(InMemoryConnector.switchIncomingChannelsToInMemory("stock-events"));
+        props.putAll(InMemoryConnector.switchOutgoingChannelsToInMemory("product-events"));
         return props;
     }
 
     @Override
     public void stop() {
+        InMemoryConnector.clear();
         if (productsDb != null) {
             productsDb.stop();
         }

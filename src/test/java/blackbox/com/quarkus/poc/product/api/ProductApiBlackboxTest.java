@@ -71,6 +71,7 @@ class ProductApiBlackboxTest {
     @Test
     void getProfile_whenProductExists_shouldCombineSupplierAndEnrichment() {
         String id = given()
+                .filter(OPENAPI)
                 .contentType(ContentType.JSON)
                 .body("""
                         {
