@@ -101,7 +101,7 @@ sequenceDiagram
 | REST client resiliency | `@Retry` `@Timeout` `@CircuitBreaker` `@Fallback` | Declarative FT on top of reactive client |
 | Caching | `quarkus-cache` Caffeine | Zero extra infra for POC |
 | Two DBs | Named Agroal datasources + Hibernate PUs + Flyway per DB | Mirrors multi-DB production shapes |
-| Contract | `src/main/resources/api/openapi.yaml` | Design-first; blackbox validates responses against it |
+| Contract | `src/main/resources/api/openapi.yaml` | Design-first; blackbox validates requests and responses against it |
 
 ## Test pyramid
 
@@ -109,16 +109,18 @@ sequenceDiagram
 |-------|----------------|--------|-------|
 | Unit | `unit.*` | No | Mockito; services, mappers, fallback |
 | Component | `component.*` | Yes | Two Postgres Testcontainers |
-| Blackbox | `blackbox.*` | Yes | RestAssured + WireMock + OpenAPI validator |
+| Blackbox | `blackbox.*` | Yes | RestAssured + WireMock + OpenAPI validator + in-memory messaging |
 | Integration | `integration.*` | Yes | Real Kafka Testcontainers; `./gradlew integrationTest` only |
 
 Gradle tasks: `test`, `componentTest`, `blackboxTest`, `ciTest`, `integrationTest`, `perfSmoke`, `perfLoad`.
+
+Full test design guide: [TESTING.md](TESTING.md).
 
 ## OpenAPI
 
 - Source: `src/main/resources/api/openapi.yaml`
 - Served: `/q/openapi`, Swagger UI at `/q/swagger-ui`
-- Blackbox: Atlassian `swagger-request-validator-restassured` filter
+- Blackbox: Atlassian `swagger-request-validator-restassured` filter on all requests
 
 ## Kafka topics
 
