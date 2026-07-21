@@ -1,6 +1,6 @@
 # Quarkus POC
 
-Standalone Quarkus **3.33 LTS** / **Java 25** sample service that demonstrates the patterns from the telflow-agreements [migration playbook](https://github.com/dgitsystems/telflow-agreements/tree/master/docs/migration): sync and async REST, Kafka producer and consumer, resilient outbound REST client, two Postgres datasources with Hibernate ORM, Caffeine caching, design-first OpenAPI, and a Martin Fowler test pyramid with WireMock and k6.
+Standalone Quarkus **3.33 LTS** / **Java 25** sample service that demonstrates the patterns from the migration playbook: sync and async REST, Kafka producer and consumer, resilient outbound REST client, two Postgres datasources with Hibernate ORM, Caffeine caching, design-first OpenAPI, and a Martin Fowler test pyramid with WireMock and k6.
 
 Base package: `com.quarkus.poc.product`
 
