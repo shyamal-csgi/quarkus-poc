@@ -1,0 +1,216 @@
+openapi: 3.0.3
+info:
+  title: Product Service API
+  version: 1.0.0
+  description: |
+    POC Quarkus product/supplier service demonstrating sync and async REST,
+    two Postgres datasources, Kafka, resilient REST client, and caching.
+servers:
+  - url: http://localhost:8080
+    description: Local
+tags:
+  - name: Products
+  - name: Suppliers
+paths:
+  /api/v1/products:
+    get:
+      tags: [Products]
+      summary: List products
+      operationId: listProducts
+      responses:
+        "200":
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductResponse"
+    post:
+      tags: [Products]
+      summary: Create product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/products/{id}:
+    get:
+      tags: [Products]
+      summary: Get product by id
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/products/{id}/profile:
+    get:
+      tags: [Products]
+      summary: Get async product profile
+      operationId: getProductProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Aggregated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductProfileResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/suppliers:
+    get:
+      tags: [Suppliers]
+      summary: List suppliers
+      operationId: listSuppliers
+      responses:
+        "200":
+          description: Supplier list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupplierResponse"
+  /api/v1/suppliers/{id}:
+    get:
+      tags: [Suppliers]
+      summary: Get supplier by id
+      operationId: getSupplierById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Supplier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupplierResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    ProductRequest:
+      type: object
+      required: [name, sku, supplierId]
+      properties:
+        name:
+          type: string
+        sku:
+          type: string
+        supplierId:
+          type: string
+    ProductResponse:
+      type: object
+      required: [id, name, sku, supplierId, status]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sku:
+          type: string
+        supplierId:
+          type: string
+        status:
+          type: integer
+    ProductProfileResponse:
+      type: object
+      required: [id, name, sku, supplierId, supplierName, supplierCity, enrichmentNote, status]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sku:
+          type: string
+        supplierId:
+          type: string
+        supplierName:
+          type: string
+        supplierCity:
+          type: string
+        enrichmentNote:
+          type: string
+        status:
+          type: integer
+    SupplierResponse:
+      type: object
+      required: [id, name, city, country, status]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        status:
+          type: integer
+    ErrorResponse:
+      type: object
+      required: [code, message, reason]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        reason:
+          type: string
+    EnrichmentResponse:
+      type: object
+      properties:
+        studentId:
+          type: string
+        note:
+          type: string
+        source:
+          type: string

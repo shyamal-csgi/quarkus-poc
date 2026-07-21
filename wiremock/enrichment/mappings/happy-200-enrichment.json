@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/api/v1/enrichment/students/.*"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "studentId": "{{request.pathSegments.[3]}}",
+      "note": "Enriched by WireMock",
+      "source": "wiremock"
+    },
+    "transformers": ["response-template"]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/api/v1/enrichment/students/SLOW-.*"
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 5000,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "studentId": "slow",
+      "note": "Delayed response",
+      "source": "wiremock-delay"
+    }
+  }
+}

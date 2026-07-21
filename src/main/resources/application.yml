@@ -1,0 +1,102 @@
+quarkus:
+  application:
+    name: quarkus-poc
+  http:
+    port: 8080
+    host: 0.0.0.0
+  smallrye-health:
+    root-path: /q/health
+  micrometer:
+    export:
+      prometheus:
+        path: /q/metrics
+  smallrye-openapi:
+    path: /q/openapi
+  swagger-ui:
+    always-include: true
+    path: /q/swagger-ui
+  datasource:
+    products:
+      db-kind: postgresql
+      username: ${PRODUCT_PRODUCTS_DB_USER:postgres}
+      password: ${PRODUCT_PRODUCTS_DB_PASSWORD:postgres}
+      jdbc:
+        url: jdbc:postgresql://${PRODUCT_PRODUCTS_DB_HOST:localhost}:${PRODUCT_PRODUCTS_DB_PORT:5432}/${PRODUCT_PRODUCTS_DB_NAME:qp_products}
+        max-size: 10
+    suppliers:
+      db-kind: postgresql
+      username: ${PRODUCT_SUPPLIERS_DB_USER:postgres}
+      password: ${PRODUCT_SUPPLIERS_DB_PASSWORD:postgres}
+      jdbc:
+        url: jdbc:postgresql://${PRODUCT_SUPPLIERS_DB_HOST:localhost}:${PRODUCT_SUPPLIERS_DB_PORT:5433}/${PRODUCT_SUPPLIERS_DB_NAME:qp_suppliers}
+        max-size: 5
+    devservices:
+      enabled: false
+  hibernate-orm:
+    products:
+      datasource: products
+      packages: com.quarkus.poc.product.domain.products
+      database:
+        generation: none
+      sql-load-script: no-file
+    suppliers:
+      datasource: suppliers
+      packages: com.quarkus.poc.product.domain.suppliers
+      database:
+        generation: none
+      sql-load-script: no-file
+  flyway:
+    products:
+      locations: db/products
+      migrate-at-start: true
+    suppliers:
+      locations: db/suppliers
+      migrate-at-start: true
+  kafka:
+    devservices:
+      enabled: false
+  rest-client:
+    enrichment-api:
+      url: ${ENRICHMENT_API_URL:http://localhost:8089}
+      connect-timeout: 2000
+      read-timeout: 3000
+  cache:
+    caffeine:
+      suppliers:
+        expire-after-write: 10M
+        maximum-size: 200
+
+kafka:
+  bootstrap:
+    servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+mp:
+  openapi:
+    extensions:
+      smallrye:
+        info:
+          title: Product Service API
+          version: 1.0.0
+  messaging:
+    outgoing:
+      product-events:
+        connector: smallrye-kafka
+        topic: quarkus.poc.signal.product.products
+        value:
+          serializer: org.apache.kafka.common.serialization.StringSerializer
+    incoming:
+      stock-events:
+        connector: smallrye-kafka
+        topic: quarkus.poc.signal.product.stock-movements
+        value:
+          deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        auto:
+          offset:
+            reset: earliest
+
+product:
+  enrichment:
+    enabled: true
+  kafka:
+    product-topic: quarkus.poc.signal.product.products
+    stock-movement-topic: quarkus.poc.signal.product.stock-movements
