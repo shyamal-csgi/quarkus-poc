@@ -19,6 +19,18 @@ Higher tiers exercise more of the stack. Lower tiers run faster and catch most d
 
 ## Tiers
 
+```bash
+        /\
+       /  \  Integration (few, slow, real services)
+      /----\
+     /      \  Blackbox (API/Kafka from outside)
+    /--------\
+   /          \  Component (service layer + infra)
+  /------------\
+ /              \  Unit (many, fast, isolated)
+/________________\
+```
+
 | Tier | Package prefix | Purpose | Infrastructure | Speed | Relative volume |
 |------|----------------|---------|----------------|-------|-----------------|
 | Unit | `unit.*` | Services, mappers, fallback logic | None (Mockito) | Fastest | Most tests |
